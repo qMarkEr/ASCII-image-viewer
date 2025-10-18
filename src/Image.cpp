@@ -1,3 +1,4 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include "Image.h"
 
 int Image::to_grayscale(int i, int j) {
@@ -85,12 +86,14 @@ int Image::Height() { return h; }
 int Image::Channels() { return c; }
 
 unsigned char &Image::operator()(int i, int j, int k) {
-//  if (i >= h || j >= w || k >= c) throw std::out_of_range("wrong image indexation\n");
+    if (i >= h || j >= w || k >= c)
+        throw std::out_of_range("wrong image indexation\n");
     return raw_data[i * w * c + j * c + k];
 }
 
 unsigned char Image::operator()(int i, int j, int k) const {
-//  if (i >= h || j >= w || k >= c) throw std::out_of_range("wrong image indexation\n");
+    if (i >= h || j >= w || k >= c)
+        throw std::out_of_range("wrong image indexation\n");
     return raw_data[i * w * c + j * c + k];
 }
 
@@ -124,19 +127,24 @@ void Image::Show() {
 
 Image Image::Resize(int width, int height) {
     Image res = Image(width, height, this->c);
-    float x_ratio = static_cast<float>(w - 1) / (width - 1);
-    float y_ratio = static_cast<float>(h - 1) / (height - 1);
+    float x_ratio = static_cast<float>(w - 1.0f) / static_cast<float>(width - 1);
+    float y_ratio = static_cast<float>(h - 1.0f) / static_cast<float>(height - 1);
 
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
-            int x_l =  static_cast<int>(floorf(x_ratio * j));
-            int x_h =  static_cast<int>(ceilf(x_ratio * j));
+            float x_orig = x_ratio * j;
+            float y_orig = y_ratio * i;
 
-            int y_l =  static_cast<int>(floorf(y_ratio * i));
-            int y_h =  static_cast<int>(ceilf(y_ratio * i));
+            int x_l = static_cast<int>(floorf(x_orig));
+            int x_h = static_cast<int>(ceilf(x_orig));
+            x_h = x_h >= w ? w - 1 : x_h;
 
-            float x_w = (x_ratio * j) - x_l;
-            float y_w = (y_ratio * i) - y_l;
+            int y_l = static_cast<int>(floorf(y_orig));
+            int y_h = static_cast<int>(ceilf(y_orig));
+            y_h = y_h >= h ? h - 1 : y_h;
+
+            float x_w = x_orig - x_l;
+            float y_w = y_orig - y_l;
 
             for (int k = 0; k < c; ++k) {
                 res(i, j, k) = (*this)(y_l, x_l, k) * (1 - x_w) * (1 - y_w) +

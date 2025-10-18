@@ -1,8 +1,9 @@
-#ifndef STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
+#pragma once
+
 extern "C" {
     #include "stb_image.h"
 };
+
 #include <iostream>
 #include <cmath>
 
@@ -16,11 +17,8 @@ private:
     unsigned char* raw_data;
 
     int to_grayscale(int i, int j);
-
     int get_grad_value(int kernel[3][3], int i, int j);
-
     void PutPixel(float mag, float dir, const unsigned char r, const unsigned char g, const unsigned char b);
-
     void Gradients(int** mag, float** dir, int& max_mag);
 
 public:
@@ -38,10 +36,4 @@ public:
     void Show();
     Image Resize(int width, int height);
 
-//    void Write() {
-//        stbi_write_png("sky2.png", w, h, c, raw_data, w * c);
-//    }
-
 };
-
-#endif
