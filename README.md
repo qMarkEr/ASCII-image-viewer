@@ -9,7 +9,6 @@
 Install CMake and run
 ```bash
 $ mkdir build && cd build
-$ cd build
 $ cmake .. && make
 ```
 ***
